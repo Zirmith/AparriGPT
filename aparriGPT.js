@@ -3,7 +3,7 @@ const { Client, Intents } = require('discord.js-selfbot-v13');
 require('dotenv').config();
 const { GoogleGenerativeAI } = require('@google/generative-ai'); // Added Google Generative API
 const app = express();
-const client = new Client({intents: [Intents.FLAGS.GUILDS, Intents.FLAGS.GUILD_MESSAGES, Intents.FLAGS.DIRECT_MESSAGES]});
+const client = new Client();
 
 // Initialize Google Generative AI client
 const genAI = new GoogleGenerativeAI(process.env.API_KEY);
