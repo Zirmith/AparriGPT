@@ -1,249 +1,240 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Discord Bot Dashboard</title>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AparriGPT Dashboard</title>
+    <link rel="stylesheet" href="styles.css">
+    <script src="https://cdn.jsdelivr.net/npm/animejs@3.2.1/lib/anime.min.js"></script>
+    <style>
+        body {
+            margin: 0;
+            font-family: var(--font-standard);
+            background-color: var(--color-bg);
+            color: var(--color-text);
+            overflow: hidden;
+        }
 
-  <!-- Google Material Icons -->
-  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+        .container {
+            opacity: 0;
+            transition: opacity 1s ease-in-out;
+        }
 
-  <!-- Anime.js for animations -->
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js"></script>
+        .container.show {
+            opacity: 1;
+        }
 
-  <style>
-    /* Root Variables for Dark Ice Theme */
-    :root {
-      --primary-color: #121212;  /* Dark background */
-      --secondary-color: #1e1e1e; /* Slightly lighter for contrast */
-      --accent-color: #00bfff;  /* Icy blue highlights */
-      --text-color: #e0f7ff;  /* Soft icy white-blue for text */
-      --font-family: 'Segoe UI', sans-serif;
-      --card-bg: #1a1a1a;  /* Clean dark card background */
-      --border-color: rgba(255, 255, 255, 0.1); /* Subtle border */
-      --button-bg: #007acc; /* For buttons and interactive elements */
-    }
+        .close-button {
+    background: none;
+    border: none;
+    color: var(--color-text);
+    font-size: 1.2rem;
+    cursor: pointer;
+    float: right;
+}
 
-    body {
-      font-family: var(--font-family);
-      background-color: var(--primary-color);
-      color: var(--text-color);
-      margin: 0;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: flex-start;
-      padding: 2rem;
-      height: 100vh;
-    }
+.close-button:hover {
+    color: var(--color-primary);
+}
 
-    .dashboard-container {
-      width: 100%;
-      max-width: 1200px;
-      padding: 2rem;
-      background: var(--card-bg);
-      border-radius: 10px;
-      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
-    }
 
-    /* Header Section for Bot Info */
-    .header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 2rem;
-      border-bottom: 1px solid var(--border-color);
-      padding-bottom: 1rem;
-    }
+        header, section, footer {
+            margin: 20px;
+        }
 
-    .bot-avatar {
-      display: flex;
-      align-items: center;
-    }
+        .transcript {
+            display: none;
+            background: var(--color-card-bg);
+            padding: 10px;
+            border-radius: var(--border-radius);
+        }
 
-    .bot-avatar img {
-      width: 100px;
-      height: 100px;
-      border-radius: 50%;
-      border: 3px solid var(--accent-color);
-      margin-right: 1.5rem;
-    }
+        .transcript.show {
+            display: block;
+        }
 
-    .bot-details h2 {
-      margin: 0;
-      font-size: 2.5rem;
-      color: var(--text-color);
-    }
-
-    .bot-details p {
-      margin: 0;
-      color: #88d8ff;
-    }
-
-    /* Navigation Section */
-    .navigation {
-      display: flex;
-      gap: 1rem;
-    }
-
-    .nav-link {
-      background: var(--button-bg);
-      padding: 0.75rem 1.5rem;
-      border-radius: 8px;
-      color: #fff;
-      text-decoration: none;
-      font-weight: bold;
-      transition: background 0.3s;
-    }
-
-    .nav-link:hover {
-      background: #005ea6;
-    }
-
-    /* Content Sections */
-    .content {
-      display: grid;
-      grid-template-columns: repeat(2, 1fr);
-      gap: 2rem;
-    }
-
-    .card {
-      background: var(--secondary-color);
-      padding: 2rem;
-      border-radius: 10px;
-      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
-    }
-
-    .card h3 {
-      margin: 0 0 1.5rem 0;
-      font-size: 1.5rem;
-      color: var(--text-color);
-    }
-
-    .card p {
-      margin: 0.5rem 0;
-      color: #9acaff;
-    }
-
-    .guild-list, .message-list {
-      max-height: 250px;
-      overflow-y: auto;
-      background: var(--primary-color);
-      border: 1px solid var(--border-color);
-      padding: 1rem;
-      border-radius: 8px;
-    }
-
-    .guild-item, .message-item {
-      margin: 0.75rem 0;
-      padding: 1rem;
-      background: var(--secondary-color);
-      border-radius: 6px;
-      display: flex;
-      justify-content: space-between;
-      border: 1px solid var(--border-color);
-    }
-
-    .guild-item span, .message-item span {
-      color: var(--accent-color);
-    }
-
-    .guild-item strong, .message-item strong {
-      color: #e0f7ff;
-    }
-
-    /* Scrollbar styling */
-    .guild-list::-webkit-scrollbar, .message-list::-webkit-scrollbar {
-      width: 8px;
-    }
-
-    .guild-list::-webkit-scrollbar-thumb, .message-list::-webkit-scrollbar-thumb {
-      background: var(--accent-color);
-      border-radius: 5px;
-    }
-  </style>
+        .transcript pre {
+            white-space: pre-wrap; /* Preserve whitespace */
+            word-wrap: break-word;
+        }
+    </style>
 </head>
 <body>
+    <div class="container">
+        <header class="header">
+            <h1>AparriGPT Dashboard</h1>
+        </header>
 
-  <div class="dashboard-container">
+        <section class="bot-info">
+            <div class="bot-avatar">
+                <img id="bot-avatar" src="" alt="Bot Avatar">
+            </div>
+            <div class="bot-details">
+                <h2 id="bot-username">Bot Name</h2>
+                <p><strong>ID:</strong> <span id="bot-id">Loading...</span></p>
+                <p><strong>Status:</strong> <span id="bot-status">Loading...</span></p>
+                <p><strong>Activity:</strong> <span id="bot-activity">Loading...</span></p>
+            </div>
+        </section>
 
-    <!-- Header Section -->
-    <div class="header">
-      <div class="bot-avatar">
-        <img src="" alt="Bot Avatar" id="botAvatar">
-        <div class="bot-details">
-          <h2 id="botName">Bot Name</h2>
-          <p id="botId">ID: 123456789</p>
-        </div>
-      </div>
-      <nav class="navigation">
-        <a href="#guilds" class="nav-link">Guilds</a>
-        <a href="#messages" class="nav-link">Messages</a>
-      </nav>
+        <section class="stats">
+            <h3>Statistics</h3>
+            <ul>
+                <li><strong>Guilds:</strong> <span id="guild-count">Loading...</span></li>
+                <li><strong>Users:</strong> <span id="user-count">Loading...</span></li>
+                <li><strong>Direct Messages:</strong> <span id="dm-count">Loading...</span></li>
+                <li><strong>Total Messages:</strong> <span id="total-messages">Loading...</span></li>
+                <li><strong>Commands Processed:</strong> <span id="commands-processed">Loading...</span></li>
+            </ul>
+        </section>
+
+        <section class="guilds">
+            <h3>Guilds</h3>
+            <ul id="guild-list">Loading...</ul>
+        </section>
+
+        <section class="dms">
+            <h3>Direct Messages</h3>
+            <ul id="dm-list">Loading...</ul>
+        </section>
+
+        <section id="transcript" class="transcript">
+          <h3>Transcript
+              <button id="close-transcript" class="close-button">X</button>
+          </h3>
+          <pre id="transcript-content">Select a DM to view its transcript.</pre>
+      </section>
+      
+
+        <footer class="footer">
+            <p>&copy; 2024 AparriGPT Dashboard</p>
+        </footer>
     </div>
 
-    <!-- Content Section -->
-    <div class="content">
-      <!-- Guilds Section -->
-      <div class="card" id="guilds">
-        <h3>Guilds Overview</h3>
-        <div class="guild-list" id="guildList">
-          <!-- Guilds will be dynamically inserted here -->
-        </div>
-      </div>
+    <script>
+        // Add Anime.js animations
+        function animateElements() {
+            anime({
+                targets: '.header h1',
+                translateY: [-50, 0],
+                opacity: [0, 1],
+                easing: 'easeOutExpo',
+                duration: 800
+            });
 
-      <!-- Recent Messages Section -->
-      <div class="card" id="messages">
-        <h3>Recent Messages</h3>
-        <div class="message-list" id="messageList">
-          <!-- Messages will be dynamically inserted here -->
-        </div>
-      </div>
-    </div>
+            anime({
+                targets: '.bot-info, .stats, .guilds, .dms',
+                opacity: [0, 1],
+                translateX: [-30, 0],
+                easing: 'easeOutQuad',
+                delay: anime.stagger(200) // staggered delay for sections
+            });
+        }
 
-  </div>
+        // Fetch data from the server
+        async function fetchBotStats() {
+            try {
+                const statusResponse = await fetch('/status');
+                const statusData = await statusResponse.json();
 
-  <script>
-    async function fetchBotData() {
-      try {
-        const response = await fetch('/api/status');
-        const data = await response.json();
+                // Update the bot details
+                document.getElementById('bot-avatar').src = `https://cdn.discordapp.com/avatars/${statusData.userID}/${statusData.avatarURL}.png?size=512`;
+                document.getElementById('bot-username').textContent = statusData.username;
+                document.getElementById('bot-id').textContent = statusData.userID;
+                document.getElementById('bot-status').textContent = statusData.status;
+                document.getElementById('bot-activity').textContent = statusData.status; // Change based on your activity status
 
-        // Update bot name and avatar
-        document.getElementById('botName').textContent = data.username;
-        document.getElementById('botAvatar').src = `https://cdn.discordapp.com/avatars/${data.id}/${data.avatar}.png?size=512`;
+                // Update statistics
+                document.getElementById('guild-count').textContent = statusData.guilds;
+                document.getElementById('user-count').textContent = statusData.users;
+                document.getElementById('dm-count').textContent = statusData.dms;
+                document.getElementById('total-messages').textContent = statusData.totalMessages;
+                document.getElementById('commands-processed').textContent = statusData.totalCommandsProcessed;
 
-        // Update guilds list
-        const guildList = document.getElementById('guildList');
-        guildList.innerHTML = ''; // Clear existing content
-        data.guilds.forEach(guild => {
-          const guildItem = document.createElement('div');
-          guildItem.classList.add('guild-item');
-          guildItem.innerHTML = `<strong>${guild.name}</strong> <span>Members: ${guild.memberCount}</span>`;
-          guildList.appendChild(guildItem);
-        });
+                // Update DM list
+                const dmListResponse = await fetch('/dms');
+                const dmListData = await dmListResponse.json();
+                const dmList = document.getElementById('dm-list');
+                dmList.innerHTML = '';
+                dmListData.dmChannels.forEach(dm => {
+                    const li = document.createElement('li');
+                    console.log(dm.id)
+                    li.textContent = `User: ${dm.recipient}, Last Message: ${dm.lastMessage}`;
+                    li.onclick = () => loadTranscript(dm.id);
+                    dmList.appendChild(li);
+                });
 
-        // Update recent messages list
-        const messageList = document.getElementById('messageList');
-        messageList.innerHTML = ''; // Clear existing content
-        data.recentMessages.forEach(message => {
-          const messageItem = document.createElement('div');
-          messageItem.classList.add('message-item');
-          messageItem.innerHTML = `<strong>${message.author}</strong>: ${message.content} <span>${new Date(message.timestamp).toLocaleString()}</span>`;
-          messageList.appendChild(messageItem);
-        });
+                // Update guild list
+                const guildListResponse = await fetch('/guilds');
+                const guildListData = await guildListResponse.json();
+                const guildList = document.getElementById('guild-list');
+                guildList.innerHTML = '';
+                guildListData.guilds.forEach(guild => {
+                    const li = document.createElement('li');
+                    li.textContent = `${guild.name} (ID: ${guild.id}, Members: ${guild.memberCount})`;
+                    guildList.appendChild(li);
+                });
 
-      } catch (error) {
-        console.error('Error fetching bot data:', error);
-      }
+                // Show elements with animation
+                document.querySelector('.container').classList.add('show');
+                animateElements();
+            } catch (error) {
+                console.error('Error fetching bot stats:', error);
+            }
+        }
+
+      // Function to close the transcript
+function closeTranscript() {
+    const transcript = document.getElementById('transcript');
+    transcript.classList.remove('show');
+}
+
+// Add event listener to the close button
+document.getElementById('close-transcript').addEventListener('click', closeTranscript);
+
+// Load transcript function with updated handling
+async function loadTranscript(userId) {
+    try {
+        const transcriptResponse = await fetch(`/transcript/${userId}`);
+        const transcriptData = await transcriptResponse.json();
+        
+        console.log('Transcript Data:', transcriptData); // Log data to check its structure
+
+        if (Array.isArray(transcriptData)) {
+            const transcript = document.getElementById('transcript');
+            const transcriptContent = document.getElementById('transcript-content');
+
+            transcriptContent.textContent = transcriptData
+                .map(msg => `[${new Date(msg.timestamp).toLocaleString()}] ${msg.content}`)
+                .join('\n');
+            transcript.classList.add('show');
+        } else {
+            console.error('Expected array but got:', transcriptData);
+            // Optionally display an error message to the user
+            const transcript = document.getElementById('transcript');
+            const transcriptContent = document.getElementById('transcript-content');
+            transcriptContent.textContent = 'No transcript found.';
+            transcript.classList.add('show');
+        }
+    } catch (error) {
+        console.error('Error fetching transcript:', error);
+        // Optionally display an error message to the user
+        const transcript = document.getElementById('transcript');
+        const transcriptContent = document.getElementById('transcript-content');
+        transcriptContent.textContent = 'Error fetching transcript.';
+        transcript.classList.add('show');
     }
+}
 
-    // Fetch data when the page loads
-    fetchBotData();
 
-    // Optionally refresh data every 10 seconds
-    setInterval(fetchBotData, 10000);
-  </script>
+        // Fetch data and show transition effect
+    window.onload = function() {
+        fetchBotStats();
 
+        // Refresh data every 30 seconds (30000 milliseconds)
+        setInterval(fetchBotStats, 30000);
+    };
+    </script>
 </body>
 </html>
