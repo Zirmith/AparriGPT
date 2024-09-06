@@ -44,6 +44,8 @@ client.on('messageCreate', (message) => {
 client.on('ready', async () => {
   console.log(`${client.user.username} is ready!`);
 
+  client.user.setPronouns("Xem | XI | He / Them")
+
   // Fetch and store guild info
   guilds = client.guilds.cache.map(guild => ({
     name: guild.name,
