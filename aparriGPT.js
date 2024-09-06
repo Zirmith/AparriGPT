@@ -26,6 +26,11 @@ const botPersonality = {
 // Serve static files (HTML, CSS, JS)
 app.use(express.static('public'));
 
+// Health check route for Render
+app.get('/health', (req, res) => {
+  res.sendStatus(200); // Indicate that the service is running correctly
+});
+
 // API route for bot status
 app.get('/api/status', (req, res) => {
   res.json({
@@ -125,7 +130,9 @@ async function deleteBotMessages(channel) {
   botMessages = [];
 }
 
-// On bot ready, fetch guild info and start the Express server
+const port = process.env.PORT || 3000;
+
+// On bot ready, fetch guild info
 client.on('ready', async () => {
   console.log(`${client.user.username} is ready!`);
 
@@ -135,11 +142,11 @@ client.on('ready', async () => {
     memberCount: guild.memberCount,
     id: guild.id, // Include guild ID if needed
   }));
+});
 
-  // Start the Express server
-  app.listen(3000, () => {
-    console.log('Server running at http://localhost:3000');
-  });
+// Start the Express server
+app.listen(port, () => {
+  console.log(`Server running at http://localhost:${port}`);
 });
 
 // Log in the bot using the token from environment variables
