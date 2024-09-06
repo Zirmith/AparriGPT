@@ -4,6 +4,7 @@ require('dotenv').config();
 
 const app = express();
 const client = new Client();
+const { GoogleGenerativeAI } = require("@google/generative-ai"); // added google generative api
 
 // Initialize Google Generative AI client
 const genAI = new GoogleGenerativeAI(process.env.API_KEY);
@@ -23,7 +24,7 @@ const botPersonality = {
 
 
 // Serve static files (HTML, CSS, JS)
-app.use(express.static('public'));
+app.use(express.static('public')); // edit this
 
 // API route for bot status
 app.get('/api/status', (req, res) => {
