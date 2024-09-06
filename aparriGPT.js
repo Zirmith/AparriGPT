@@ -56,44 +56,41 @@ client.on('messageCreate', async (message) => {
   // Keep only the last 50 messages to prevent memory overflow
   if (messages.length > 50) messages.shift();
 
-  // Check if the bot is mentioned or if the owner speaks to it
-  if (message.mentions.has(client.user) || message.author.id === botPersonality.owner.id) {
-    // Check if the message contains a command to delete bot messages
-    if (message.content.toLowerCase().includes('delete my messages')) {
-      await deleteBotMessages(message.channel);
-      return; // Exit early after handling the command
+  // Check if the message is a reply to the bot's own message
+  if (message.reference && message.reference.messageId) {
+    const repliedMessage = await message.channel.messages.fetch(message.reference.messageId);
+    if (repliedMessage.author.id === client.user.id) {
+      await handleBotCommand(message);
+      return;
     }
+  }
 
-    // Generate a personalized response using Google Gemini
-    const response = await generateGeminiResponse(message.content, message.author.id === botPersonality.owner.id);
+  // Check if the bot is mentioned, if the bot's name is used, or if the message is a reply to the bot
+  const botMentioned = message.mentions.has(client.user);
+  const botNameUsed = message.content.toLowerCase().includes(client.user.username.toLowerCase());
 
-    // Send the response in the chat
-    const botResponse = await message.channel.send(response);
-
-    // Track the newly sent message
-    botMessages.push(botResponse);
+  if (botMentioned || botNameUsed || message.author.id === botPersonality.owner.id) {
+    await handleBotCommand(message);
   }
 });
 
-// On bot ready, fetch guild info and start the Express server
-client.on('ready', async () => {
-  console.log(`${client.user.username} is ready!`);
+// Function to handle commands and generate responses
+async function handleBotCommand(message) {
+  // Check if the message contains a command to delete bot messages
+  if (message.content.toLowerCase().includes('delete my messages')) {
+    await deleteBotMessages(message.channel);
+    return; // Exit early after handling the command
+  }
 
-  // Fetch and store guild info
-  guilds = client.guilds.cache.map(guild => ({
-    name: guild.name,
-    memberCount: guild.memberCount,
-    id: guild.id, // Include guild ID if needed
-  }));
+  // Generate a personalized response using Google Gemini
+  const response = await generateGeminiResponse(message.content, message.author.id === botPersonality.owner.id);
 
-});
+  // Send the response in the chat
+  const botResponse = await message.channel.send(response);
 
-
-
- // Start the Express server
- app.listen(3000, () => {
-  console.log('Server running at http://localhost:3000');
-});
+  // Track the newly sent message
+  botMessages.push(botResponse);
+}
 
 // Function to communicate with Google Gemini API and generate responses
 async function generateGeminiResponse(userMessage, isOwner) {
@@ -127,6 +124,23 @@ async function deleteBotMessages(channel) {
   // Clear the list after deletion
   botMessages = [];
 }
+
+// On bot ready, fetch guild info and start the Express server
+client.on('ready', async () => {
+  console.log(`${client.user.username} is ready!`);
+
+  // Fetch and store guild info
+  guilds = client.guilds.cache.map(guild => ({
+    name: guild.name,
+    memberCount: guild.memberCount,
+    id: guild.id, // Include guild ID if needed
+  }));
+
+  // Start the Express server
+  app.listen(3000, () => {
+    console.log('Server running at http://localhost:3000');
+  });
+});
 
 // Log in the bot using the token from environment variables
 client.login(process.env.beta);
