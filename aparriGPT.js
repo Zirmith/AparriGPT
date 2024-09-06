@@ -1,13 +1,9 @@
 const express = require('express');
 const { Client, Intents } = require('discord.js-selfbot-v13');
 require('dotenv').config();
-const { GoogleGenerativeAI } = require('@google/generative-ai'); // Added Google Generative API
 const app = express();
 const client = new Client();
 
-// Initialize Google Generative AI client
-const genAI = new GoogleGenerativeAI(process.env.API_KEY);
-const model = genAI.getGenerativeModel({ model: 'gemini-1.5-flash' });
 
 let guilds = [];
 let messages = [];
@@ -97,10 +93,10 @@ async function handleBotCommand(message) {
   }
 
   // Generate a personalized response using Google Gemini
-  const response = await generateGeminiResponse(message.content, message.author.id === botPersonality.owner.id);
+  //const response = await generateGeminiResponse(message.content, message.author.id === botPersonality.owner.id);
 
   // Send the response in the chat
-  const botResponse = await message.channel.send(response);
+  const botResponse = await message.channel.send('hello');
 
   // Track the newly sent message
   botMessages.push(botResponse);
