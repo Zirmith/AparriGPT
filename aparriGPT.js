@@ -1,10 +1,9 @@
 const express = require('express');
-const { Client, Message } = require('discord.js-selfbot-v13');
+const { Client, Intents } = require('discord.js-selfbot-v13');
 require('dotenv').config();
 const { GoogleGenerativeAI } = require('@google/generative-ai'); // Added Google Generative API
-
 const app = express();
-const client = new Client();
+const client = new Client({intents: [Intents.FLAGS.GUILDS, Intents.FLAGS.GUILD_MESSAGES, Intents.FLAGS.DIRECT_MESSAGES]});
 
 // Initialize Google Generative AI client
 const genAI = new GoogleGenerativeAI(process.env.API_KEY);
@@ -33,6 +32,15 @@ app.get('/health', (req, res) => {
 
 // API route for bot status
 app.get('/api/status', (req, res) => {
+  console.log('Status route hit');  // Add log here
+  console.log({
+    status: `${client.user ? client.user.username : 'AparriGPT'} is online!`,
+    username: client.user ? client.user.username : 'Loading...',
+    id: client.user ? client.user.id : null,  // Send user ID to the front-end
+    avatar: client.user ? client.user.avatar : null,
+    guilds: guilds,
+    recentMessages: messages.slice(-10) // Show last 10 messages
+  });
   res.json({
     status: `${client.user ? client.user.username : 'AparriGPT'} is online!`,
     username: client.user ? client.user.username : 'Loading...',
@@ -42,6 +50,7 @@ app.get('/api/status', (req, res) => {
     recentMessages: messages.slice(-10) // Show last 10 messages
   });
 });
+
 
 // Handle incoming chat message events and integrate Google Gemini API
 client.on('messageCreate', async (message) => {
@@ -142,12 +151,28 @@ client.on('ready', async () => {
     memberCount: guild.memberCount,
     id: guild.id, // Include guild ID if needed
   }));
+
+  // Log the guild info
+  console.log('Guilds:', guilds);
 });
+
+
+
+client.on('error', (error) => {
+  console.error('Client error:', error);
+});
+
+
+// Log in the bot using the token from environment variables
+
+client.login(process.env.beta).catch(err => {
+  console.error('Failed to log in:', err);
+});
+
 
 // Start the Express server
 app.listen(port, () => {
   console.log(`Server running at http://localhost:${port}`);
 });
 
-// Log in the bot using the token from environment variables
-client.login(process.env.beta);
+
