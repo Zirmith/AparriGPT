@@ -14,20 +14,18 @@ app.use(express.static('public'));
 // API route for bot status
 app.get('/api/status', (req, res) => {
   res.json({
-    status: 'AparriGPT is online!',
+    status: `${client.user ? client.user.username : 'AparriGPT'} is online!`,
     username: client.user ? client.user.username : 'Loading...',
-    id: client.user ? client.user.id : null,
+    id: client.user ? client.user.id : null,  // Send user ID to the front-end
     avatar: client.user ? client.user.avatar : null,
     guilds: guilds,
     recentMessages: messages.slice(-10) // Show last 10 messages
   });
 });
 
-// Handle chat message interactions
+// Handle incoming chat message events
 client.on('messageCreate', (message) => {
-  if (message.author.id === client.user.id) {
-    return; // Ignore selfbot messages
-  }
+  if (message.author.id === client.user.id) return;  // Ignore bot's own messages
 
   // Store recent messages
   messages.push({
@@ -40,7 +38,7 @@ client.on('messageCreate', (message) => {
   if (messages.length > 50) messages.shift();
 });
 
-// On bot ready, fetch guild info and start Express server
+// On bot ready, fetch guild info and start the Express server
 client.on('ready', async () => {
   console.log(`${client.user.username} is ready!`);
 
@@ -48,13 +46,14 @@ client.on('ready', async () => {
   guilds = client.guilds.cache.map(guild => ({
     name: guild.name,
     memberCount: guild.memberCount,
-    id: guild.id
+    id: guild.id // Include guild ID if needed
   }));
-// I dont know fix
-  // Start Express server
+
+  // Start the Express server
   app.listen(3000, () => {
     console.log('Server running at http://localhost:3000');
   });
 });
 
+// Log in the bot using the token from environment variables
 client.login(process.env.beta);
