@@ -59,4 +59,4 @@ client.on('ready', async () => {
   });
 });
 
-client.login(process.env.TZ);
+client.login(process.env.beta);
